@@ -8,17 +8,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
       - run: npm ci
         working-directory: ./Aufgabe-4
       - run: npm run build
         working-directory: ./Aufgabe-4
-
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
