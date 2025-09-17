@@ -1,1 +1,2 @@
-echo "Post-commit hook executed"
+#!/bin/sh
+node scripts/semver-tag.mjs
