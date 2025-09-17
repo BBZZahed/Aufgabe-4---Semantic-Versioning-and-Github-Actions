@@ -1,0 +1,50 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - 'feature/**'     # run on feature branches
+  pull_request:
+    branches:
+      - main             # run again when a PR targets main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npx eslint .
+
+      - name: Build
+        env:
+          CI: true
+        run: npm run build
+
+      - name: Upload dist artifact (for PR review)
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: |
+            dist
+            build
